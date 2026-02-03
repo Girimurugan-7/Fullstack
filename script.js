@@ -1,46 +1,77 @@
-const form = document.getElementById("tableForm");
-const tableContainer = document.getElementById("tableContainer");
-const errorMsg = document.getElementById("errorMsg");
-const resetBtn = document.getElementById("resetBtn");
+function loadReviews() {
+  fetch("reviews.json")
+    .then(response => response.json())
+    .then(data => {
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
+      document.getElementById("jsonPreview").textContent =
+        JSON.stringify(data, null, 2);
 
-  const rows = parseInt(document.getElementById("rows").value);
-  const cols = parseInt(document.getElementById("cols").value);
-  const prefix = document.getElementById("prefix").value || "Cell";
+      analyzeReviews(data);
+    })
+    .catch(error => {
+      console.error("Error loading JSON", error);
+    });
+}
 
-  if (
-    !Number.isInteger(rows) || !Number.isInteger(cols) ||
-    rows < 1 || rows > 20 ||
-    cols < 1 || cols > 20
-  ) {
-    errorMsg.textContent = "Rows and Columns must be integers between 1 and 20.";
-    return;
+
+function analyzeReviews(data) {
+  let outputHTML = "";
+  let labels = [];
+  let averages = [];
+
+  for (let category in data) {
+    const reviews = data[category];
+
+    const ratings = reviews.map(r => r.rating);
+    const average =
+      ratings.reduce((sum, r) => sum + r, 0) / ratings.length;
+
+    const positive =
+      reviews.filter(r => r.rating >= 4);
+
+    labels.push(category);
+    averages.push(average.toFixed(2));
+
+    outputHTML += `
+      <h4>${category.toUpperCase()}</h4>
+      Average Rating: <b>${average.toFixed(2)}</b><br>
+      Positive Reviews: <b>${positive.length}</b>
+      <hr>
+    `;
   }
 
-  errorMsg.textContent = "";
-  tableContainer.innerHTML = "";
+  document.getElementById("output").innerHTML = outputHTML;
 
-  const table = document.createElement("table");
+  drawChart(labels, averages);
+}
 
-  for (let i = 1; i <= rows; i++) {
-    const tr = document.createElement("tr");
 
-    for (let j = 1; j <= cols; j++) {
-      const td = document.createElement("td");
-      td.textContent = `${prefix} ${i}-${j}`;
-      tr.appendChild(td);
+function drawChart(labels, values) {
+
+  if (window.reviewChart) {
+    window.reviewChart.destroy();
+  }
+
+  window.reviewChart = new Chart(
+    document.getElementById("chart"),
+    {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Average Rating",
+          data: values,
+          backgroundColor: "#4f81ff"
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 5
+          }
+        }
+      }
     }
-
-    table.appendChild(tr);
-  }
-
-  tableContainer.appendChild(table);
-});
-
-resetBtn.addEventListener("click", function () {
-  tableContainer.innerHTML = "";
-  errorMsg.textContent = "";
-  form.reset();
-});
+  );
+}

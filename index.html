@@ -1,42 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Dynamic Table Generator</title>
-    <link rel="stylesheet" href="./sss.css">
+  <meta charset="UTF-8">
+  <title>JSON Review Analyzer</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="./style.css">
 </head>
-
 <body>
-    <center>
-    <h2>Dynamic Table Generator</h2>
 
-    <form id="tableForm">
-        <label>
-            Number of Rows:
-            <input type="number" id="rows" required placeholder="1-20 Characters Only">
-        </label>
+  <h1>📊 Product Review Analysis</h1>
 
-        <label>
-            Number of Columns:
-            <input type="number" id="cols" required placeholder="1-20 Characters Only">
-        </label>
+  <button onclick="loadReviews()">Load Reviews</button>
 
-        <label>
-            Cell Content Prefix:
-            <input type="text" id="prefix" placeholder="Cell">
-        </label>
+  <div class="container">
+    <div class="box">
+      <h3>JSON Data Preview</h3>
+      <pre id="jsonPreview"></pre>
+    </div>
 
-        <button type="submit">Generate Table</button>
-        <button type="button" id="resetBtn">Reset</button>
-    </form>
+    <div class="box">
+      <h3>Analysis Result</h3>
+      <div id="output"></div>
+    </div>
+  </div>
 
-    <p id="errorMsg" class="error"></p>
+  <canvas id="chart"></canvas>
 
-    <div id="tableContainer"></div>
-    </center>
-
-    <script src="./script.js"></script>
+  <script src="./script.js"></script>
 </body>
-
 </html>
